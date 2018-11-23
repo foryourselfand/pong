@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.WSA;
 
 public class Ball : MonoBehaviour
 {
@@ -38,8 +41,14 @@ public class Ball : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Goal"))
         {
+            var orientation = GetOrientationNumber(other);
+            var paddleName = orientation == 1 ? "Right" : "Left";
+
             transform.position = new Vector2(0, 0);
             rigidBody.velocity = new Vector2(GetOrientationNumber(other), 0) * speed;
+
+            GameObject.Find(string.Format("{0}Paddle", paddleName)).GetComponent<Rigidbody2D>().position = new Vector2(20 * orientation, 0);
+            IncreaseTextUiScore(string.Format("{0}ScoreUI", paddleName));
 
             SoundManager.Instance.PlayOnShot(SoundManager.Instance.goalBloop);
         }
@@ -71,5 +80,21 @@ public class Ball : MonoBehaviour
     float BallHitPaddleWhere(Vector2 ball, Vector2 paddle, float paddleHeight)
     {
         return (ball.y - paddle.y) / paddleHeight;
+    }
+
+    // Increases the score the the text UI name passed
+    void IncreaseTextUiScore(string textUIName)
+    {
+        // Find the matching text UI component
+        var textUiComp = GameObject.Find(textUIName).GetComponent<Text>();
+
+        // Get the string stored in it and convert to an int
+        int score = int.Parse(textUiComp.text);
+
+        // Increment the score
+        score++;
+
+        // Convert the score to a string and update the UI
+        textUiComp.text = score.ToString();
     }
 }
