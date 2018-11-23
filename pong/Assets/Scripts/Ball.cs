@@ -41,13 +41,14 @@ public class Ball : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Goal"))
         {
+            transform.position = new Vector2(0, 0);
+            rigidBody.velocity = new Vector2(GetOrientationNumber(other), 0) * speed;
+            
             var orientation = GetOrientationNumber(other);
             var paddleName = orientation == 1 ? "Right" : "Left";
 
-            transform.position = new Vector2(0, 0);
-            rigidBody.velocity = new Vector2(GetOrientationNumber(other), 0) * speed;
-
-            GameObject.Find(string.Format("{0}Paddle", paddleName)).GetComponent<Rigidbody2D>().position = new Vector2(20 * orientation, 0);
+            GameObject.Find(string.Format("{0}Paddle", paddleName)).GetComponent<Rigidbody2D>().position =
+                new Vector2(20 * orientation, 0);
             IncreaseTextUiScore(string.Format("{0}ScoreUI", paddleName));
 
             SoundManager.Instance.PlayOnShot(SoundManager.Instance.goalBloop);
